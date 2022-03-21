@@ -190,6 +190,11 @@ int main(int argc, char *argv[]) {
 
             FILE *file;
             file = fopen(argv[i], "rb");
+
+ 	    if (file == NULL){
+                printf("File %s doesn't exits.\n", argc[i])
+            }
+
             char utf8character[5];
 
             memset(utf8character, 0, sizeof(utf8character));
