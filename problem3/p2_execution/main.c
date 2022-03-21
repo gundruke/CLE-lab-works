@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
                 free(matrix);
 
                 t1 = ((double) clock ()) / CLOCKS_PER_SEC;
-                
+
                 t2 += t1 - t0;
             }
 
