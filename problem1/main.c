@@ -1,8 +1,11 @@
 //
 // Created by gundruke on 3/18/22.
 //
+
+//TODO
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 void getUTF8char(FILE *buffer, unsigned char *utf8char){
 
@@ -170,8 +173,6 @@ int is_alpha_numeric(const unsigned char *utf8char){
 }
 
 int main(int argc, char *argv[]) {
-    int letter;
-
     int total_words;
     int vowel_begin;
     int consonant_end;
@@ -179,6 +180,9 @@ int main(int argc, char *argv[]) {
     int in_word;
     int last_char_consonant;
 
+
+    double t0, t1, t2; /* time limits */
+    t2 = 0.0;
 
     if (argc >= 2){
         for(int i = 1; i < argc; i++){
@@ -190,6 +194,14 @@ int main(int argc, char *argv[]) {
 
             FILE *file;
             file = fopen(argv[i], "rb");
+
+            if (!file){
+                printf("File %s does not exist \n",argv[i]);
+                break;
+            }
+
+            t0 = ((double) clock ()) / CLOCKS_PER_SEC;
+
             char utf8character[5];
 
             memset(utf8character, 0, sizeof(utf8character));
@@ -226,6 +238,9 @@ int main(int argc, char *argv[]) {
                 getUTF8char(file, utf8character);
             }
 
+            t1 = ((double) clock ()) / CLOCKS_PER_SEC;
+            t2 += t1 - t0;
+
             fclose(file);
 
             // total number of words, number of words beginning with a
@@ -237,6 +252,7 @@ int main(int argc, char *argv[]) {
             printf("Words ending with consonant : %d\n", consonant_end);
             printf("=================  END  ================\n\n\n");
         }
+        printf ("\nElapsed time = %.6f s\n", t2);
     }
     else{
         printf("You need to supply some text files.");
