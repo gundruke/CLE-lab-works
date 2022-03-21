@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 void read_matrix(double* mat, FILE* file, int mat_order){
     for(int j = 0; j < (mat_order * mat_order); ++j){
@@ -50,37 +51,66 @@ double determinant(int mat_order, double* mat){
 }
 
 
-int main() {
-    FILE* file;
+int main(int argc, char *argv[]) {
+
+
+    FILE *file;
     int num_matrices;
     int matrix_order;
 
-    // Opening file in reading mode
-    file = fopen("mat128_32.bin", "rb");
+    double t0, t1, t2; /* time limits */
+    t2 = 0.0;
 
-    fread(&num_matrices, sizeof(int), 1, file);
-    printf("Number of matrices to be read = %d \n", num_matrices);
-    fread(&matrix_order, sizeof(int), 1, file);
-    printf("Matrices order = %d \n\n", matrix_order);
+    if (argc >= 2) {
+        for (int i = 1; i < argc; i++) {
 
 
-    for(int i = 1; i <= num_matrices; i++){
-        printf("Processing matrix  : %d\n", i);
-        double* matrix = malloc((matrix_order * matrix_order) * sizeof(double));
-        read_matrix(matrix, file, matrix_order);
+            // Opening file in reading mode
+            file = fopen(argv[i], "rb");
 
-        /*for(int j = 0; j < (matrix_order * matrix_order); ++j){
-            printf("%.2f ",matrix[j]);
-            if (((j+1) % matrix_order) == 0){
-                printf("\n");
+            if (!file) {
+                printf("File %s does not exist \n", argv[i]);
+                break;
             }
-        }*/
 
-        printf("Determinant : %e\n\n", determinant(matrix_order, matrix));
+            printf("\n================ STATUS ================\n");
+            printf("Current file name            : %s\n", argv[i]);
 
-        free(matrix);
+            fread(&num_matrices, sizeof(int), 1, file);
+            printf("Number of matrices to be read = %d \n", num_matrices);
+            fread(&matrix_order, sizeof(int), 1, file);
+            printf("Matrices order = %d \n\n", matrix_order);
+
+
+
+            for (int i = 1; i <= num_matrices; i++) {
+                t0 = ((double) clock ()) / CLOCKS_PER_SEC;
+                printf("Processing matrix  : %d\n", i);
+                double *matrix = malloc((matrix_order * matrix_order) * sizeof(double));
+                read_matrix(matrix, file, matrix_order);
+
+                /*
+                 *to print the matrix
+                 *
+                 * for(int j = 0; j < (matrix_order * matrix_order); ++j){
+                    printf("%.2f ",matrix[j]);
+                    if (((j+1) % matrix_order) == 0){
+                        printf("\n");
+                    }
+                }*/
+
+                t1 = ((double) clock ()) / CLOCKS_PER_SEC;
+                t2 += t1 - t0;
+
+                printf("Determinant : %e\n\n", determinant(matrix_order, matrix));
+
+                free(matrix);
+            }
+            printf("=================  END  ================\n\n\n");
+            // Closing the file
+            fclose(file);
+        }
+
+        printf ("\nElapsed time = %.6f s\n", t2);
     }
-    // Closing the file
-    fclose(file);
-    return 0;
 }
