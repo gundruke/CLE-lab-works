@@ -3,7 +3,10 @@
 #include <libgen.h>
 #include <unistd.h>
 #include <string.h>
+
+
 static void printUsage (char *cmdName);
+
 int main (int argc, char *argv[])
 {
     int opt; /* selected option */
